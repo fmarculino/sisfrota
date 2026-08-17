@@ -82,6 +82,22 @@ O SisEscala funciona, mas documenta as próprias cicatrizes. Aqui elas são evit
   (`docs/evolucao/`), decisão que muda rumo (`docs/decisoes/`).
 - **Nunca afirmar o que não foi verificado.** Se não deu para conferir, escrever que não deu.
 
+## Supabase — chaves e onde cada uma pode aparecer
+
+Projeto self-hosted via Coolify. Três variáveis em `.env.local` (nunca commitado):
+
+| Variável | Onde usar | Risco se vazar |
+|---|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Qualquer lugar | Nenhum — é pública por natureza |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Qualquer lugar (`src/lib/supabase/client.ts` e `server.ts`) | Baixo — respeita RLS, é para isso que existe |
+| `SUPABASE_SERVICE_ROLE_KEY` | **Só** `src/lib/supabase/admin.ts`, só em Server Actions/Route Handlers | **Alto — ignora RLS por completo, acesso total ao banco** |
+
+A `service_role` nunca leva prefixo `NEXT_PUBLIC_` — isso a colocaria no bundle do navegador,
+visível a qualquer visitante do site. `src/lib/supabase/admin.ts` importa o pacote
+`server-only` justamente para o build falhar se esse arquivo for puxado por engano num Client
+Component. Antes de usar `createAdminClient()`, perguntar: essa operação não dá pra fazer
+respeitando RLS com `src/lib/supabase/server.ts`? Se der, usar aquele.
+
 ## Git / GitHub
 
 Repositório: `github.com/fmarculino/sisfrota` (branch `main`).
