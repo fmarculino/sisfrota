@@ -24,3 +24,10 @@ Thumbs.db
 
 # Supabase local
 .supabase/
+
+# TypeScript
+next-env.d.ts
+*.tsbuildinfo
+
+# Deploy credentials (NUNCA commitar)
+.deploy/

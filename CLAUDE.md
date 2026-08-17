@@ -13,7 +13,9 @@ administrativo. Na dúvida, investigue demais.
 
 ## Estado atual
 
-**Fase M0 (partida).** Nada em produção. Nenhum dado real ainda.
+**Fase M0 (partida).** Nada em produção. Nenhum dado real ainda. Existe só uma página de
+apresentação (placeholder, "em desenvolvimento") em `src/app/page.tsx`, publicada em
+`sisfrota.vps.atb.app.br` para o domínio não ficar vazio enquanto o M0 anda.
 Ver [`docs/planos/2026-08-17-m0-partida.md`](docs/planos/2026-08-17-m0-partida.md).
 
 ## Stack — espelha o SisEscala por decisão, não por acaso
@@ -79,6 +81,34 @@ O SisEscala funciona, mas documenta as próprias cicatrizes. Aqui elas são evit
 - **Documentação**: plano antes de fase grande (`docs/planos/`), registro depois
   (`docs/evolucao/`), decisão que muda rumo (`docs/decisoes/`).
 - **Nunca afirmar o que não foi verificado.** Se não deu para conferir, escrever que não deu.
+
+## Git / GitHub
+
+Repositório: `github.com/fmarculino/sisfrota` (branch `main`).
+
+Push é feito por HTTPS com um fine-grained personal access token, restrito só a este
+repositório (permissão `Contents: Read and write`, nada além disso — não abre outros repos
+do Fernando). O token vive em `.deploy/github_token`, **nunca commitado** (está no
+`.gitignore`). Para usar:
+
+```bash
+TOKEN=$(cat .deploy/github_token)
+git remote set-url origin "https://x-access-token:${TOKEN}@github.com/fmarculino/sisfrota.git"
+git push origin main
+git remote set-url origin "https://github.com/fmarculino/sisfrota.git"   # remove o token da URL depois
+```
+
+Se o token expirar (checar validade em `.deploy/github_token.md`) ou for revogado, gerar um
+novo em github.com/settings/personal-access-tokens/new com o mesmo escopo (repositório único
+`sisfrota`, `Contents: Read and write`) e substituir o arquivo.
+
+**Nota de ambiente:** a pasta `Projetos` do Fernando é montada de um jeito que não permite
+apagar nem renomear arquivo depois de escrito — e Git usa lock files (rename atômico) para
+quase tudo. Rodar `git init`/`add`/`commit`/`push` direto nessa pasta falha com
+"Operation not permitted" em `.git/index.lock`. Solução: clonar/commitar num diretório
+temporário real (ex. `/tmp` no sandbox), e só então copiar os arquivos de volta pra cá com
+uma ferramenta que escreve via API (não `cp`/`mv` de shell). `git status`/`log`/`diff` mesmo
+lendo direto daqui funcionam normalmente — só operações de escrita no `.git` que quebram.
 
 ## Verificação
 
